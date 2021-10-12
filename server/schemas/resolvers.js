@@ -1,7 +1,8 @@
 const { User, Thought } = require("../models");
+
 const resolvers = {
   Query: {
-      //get all thoughts or thought by username
+    //get all thoughts or thought by username
     thoughts: async (parent, { username }) => {
       const params = username ? { username } : {};
       return Thought.find(params).sort({ createdAt: -1 });
