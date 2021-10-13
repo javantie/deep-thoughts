@@ -1,4 +1,5 @@
 const { User, Thought } = require("../models");
+const { AuthenticationError } = require("apollo-server-express");
 
 const resolvers = {
   Query: {
@@ -24,6 +25,27 @@ const resolvers = {
         .select("-__v -password")
         .populate("friends")
         .populate("thoughts");
+    },
+    //CRUD Operations
+  },
+
+  Mutation: {
+    addUser: async (parent, args) => {
+      const user = await User.create(args);
+      return user;
+    },
+
+    login: async (parent, { email, password }) => {
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw new AuthenticationError("Incorrect Credentials");
+      }
+      const correctPW = await user.isCorrectPassword(password);
+
+      if (!correctPW) {
+        throw new AuthenticationError("Incorrect Password");
+      }
+      return User;
     },
   },
 };
